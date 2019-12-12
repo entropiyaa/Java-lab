@@ -94,6 +94,8 @@ public class Main {
         Food Cake = new Cake("");
         Food Beef = new Beef("");
 
+        System.out.println("Общее количество продуктов:");
+
         for(Food item: breakfast)
         {
             if(item != null)
@@ -141,6 +143,21 @@ public class Main {
                 { Beef.addC(); }
             }
         }
+
+        System.out.println("Яблок съедено " + Apple.getC());
+        System.out.println("Сыра съедено " + Cheese.getC());
+        System.out.println("Чаю выпито " + Tea.getC());
+        System.out.println("Пирога съедено " + Pie.getC());
+        System.out.println("Молока выпито " + Milk.getC());
+        System.out.println("Картошки съедено " + Potatoes.getC());
+        System.out.println("Гамбургеров съедено " + Burger.getC());
+        System.out.println("Кофе выпито " + Coffee.getC());
+        System.out.println("Мороженного съедено " + IceCream.getC());
+        System.out.println("Жевательной резинки съедено " + ChewingGum.getC());
+        System.out.println("Яиц съедено " + Eggs.getC());
+        System.out.println("Лимонада выпито " + Lemonade.getC());
+        System.out.println("Пирожных съедено " + Cake.getC());
+        System.out.println("Мяса съедено " + Beef.getC());
 
 
 
