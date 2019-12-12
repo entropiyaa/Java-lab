@@ -1,6 +1,7 @@
 public abstract class Food implements Consumable {
 
     private String name = null;
+    private int c = 0;             //количество
 
     public Food(String name)
     {
@@ -13,6 +14,14 @@ public abstract class Food implements Consumable {
     public String getName()
     {
         return name;
+    }
+    public int getC()
+    {
+        return c;
+    }
+    public void addC()
+    {
+        c++;
     }
     @Override
     public String toString()
