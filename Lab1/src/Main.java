@@ -70,12 +70,33 @@ public class Main {
         }
 
             for (Food item: breakfast)
+            {
                 if (item!=null)
                 {
                     item.consume();
                 }
                 else
                     { break; }
+            }
+
+        Food Apple = new Apple("");
+        Food Cheese = new Cheese();
+        Food Tea = new Tea("");
+        Food Pie = new Pie("");
+        Food Milk = new Milk("");
+        Food Potatoes = new Potatoes("");
+        Food Burger = new Burger("");
+        Food Coffee = new Coffee("");
+        Food IceCream = new IceCream("");
+        Food ChewingGum = new ChewingGum("");
+        Food Eggs = new Eggs("");
+        Food Lemonade = new Lemonade("");
+        Food Cake = new Cake("");
+        Food Beef = new Beef("");
+
+
+
+
 
             System.out.println("Приятного аппетита..");
     }
