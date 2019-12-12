@@ -94,6 +94,54 @@ public class Main {
         Food Cake = new Cake("");
         Food Beef = new Beef("");
 
+        for(Food item: breakfast)
+        {
+            if(item != null)
+            {
+                if(item.equals(Apple))
+                { Apple.addC(); }
+
+                if(item.equals(Cheese))
+                { Cheese.addC(); }
+
+                if(item.equals(Tea))
+                { Tea.addC(); }
+
+                if(item.equals(Pie))
+                { Pie.addC(); }
+
+                if(item.equals(Milk))
+                { Milk.addC(); }
+
+                if(item.equals(Potatoes))
+                { Potatoes.addC(); }
+
+                if(item.equals(Burger))
+                { Burger.addC(); }
+
+                if(item.equals(Coffee))
+                { Coffee.addC(); }
+
+                if(item.equals(IceCream))
+                { IceCream.addC(); }
+
+                if(item.equals(ChewingGum))
+                { ChewingGum.addC(); }
+
+                if(item.equals(Eggs))
+                { Eggs.addC(); }
+
+                if(item.equals(Lemonade))
+                { Lemonade.addC(); }
+
+                if(item.equals(Cake))
+                { Cake.addC(); }
+
+                if(item.equals(Beef))
+                { Beef.addC(); }
+            }
+        }
+
 
 
 
