@@ -2,8 +2,8 @@ public class Main {
 
     public static void main(String[] args) {
 
-            Food[] breakfast = new Food[20];
-            int i = 0;
+        Food[] breakfast = new Food[20];
+        int i = 0;
 
         for (String arg: args)
         {
@@ -69,15 +69,15 @@ public class Main {
             i++;
         }
 
-            for (Food item: breakfast)
+        for (Food item: breakfast)
+        {
+            if (item!=null)
             {
-                if (item!=null)
-                {
-                    item.consume();
-                }
-                else
-                    { break; }
+                item.consume();
             }
+            else
+                { break; }
+        }
 
         Food Apple = new Apple("");
         Food Cheese = new Cheese();
@@ -159,10 +159,7 @@ public class Main {
         System.out.println("Пирожных съедено " + Cake.getC());
         System.out.println("Мяса съедено " + Beef.getC());
 
-
-
-
-
-            System.out.println("Приятного аппетита..");
+        System.out.println("Приятного аппетита..");
+        System.out.println("Спасибо..");
     }
 }
