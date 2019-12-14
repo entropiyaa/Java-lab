@@ -34,6 +34,20 @@ public class MainFrame extends JFrame {
     // Формула No1 для рассчѐта
     public Double calculate1(Double x, Double y, Double z) {
 
+        if (x <= 0)	{
+            JOptionPane.showMessageDialog(MainFrame.this,
+                    "x должен быть больше нуля", "" +
+                            "Ошибка ввода", JOptionPane.WARNING_MESSAGE);
+            return 0.0;
+        }
+
+        if (z == -1)	{
+            JOptionPane.showMessageDialog(MainFrame.this,
+                    "z не может быть -1", "" +
+                            "Ошибка ввода", JOptionPane.WARNING_MESSAGE);
+            return 0.0;
+        }
+
         double chisl, znam, result;
         chisl = Math.sqrt(Math.sqrt(Math.cos(Math.getExponent(y)) + Math.getExponent(y * y) + Math.sqrt(1/x)));
         znam = Math.pow(Math.cos(Math.PI * z * z * z) + Math.log(z*z + 2*z + 1), Math.sin(y));
@@ -43,6 +57,20 @@ public class MainFrame extends JFrame {
 
     // Формула No2 для рассчѐта
     public Double calculate2(Double x, Double y, Double z) {
+
+        if (x < -1)	{
+            JOptionPane.showMessageDialog(MainFrame.this,
+                    "x должен быть больше -1", "" +
+                            "Ошибка ввода", JOptionPane.WARNING_MESSAGE);
+            return 0.0;
+        }
+
+        if (y == 0)	{
+            JOptionPane.showMessageDialog(MainFrame.this,
+                    "y не может равняться нулю", "" +
+                            "Ошибка ввода", JOptionPane.WARNING_MESSAGE);
+            return 0.0;
+        }
 
         double chisl, znam, result;
         chisl = (1 + Math.pow(x,z) + Math.log(y * y)) * (1 - Math.sin(y * z));
