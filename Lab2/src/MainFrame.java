@@ -26,6 +26,7 @@ public class MainFrame extends JFrame {
     private JTextField textFieldY;
     private JTextField textFieldZ;
     private JTextField textFieldResult;
+    private  JTextField textFieldM;
 
     private ButtonGroup radioButtons = new ButtonGroup();
 
@@ -161,6 +162,19 @@ public class MainFrame extends JFrame {
         hboxButtons.add(Box.createHorizontalGlue());
         hboxButtons.setBorder(BorderFactory.createLineBorder(Color.GREEN));
 
+// Создание коробки для результата новых кнопок
+        JLabel labelForM = new JLabel("Результат:");
+        textFieldM = new JTextField("0", 20);
+        textFieldM.setMaximumSize(textFieldM.getPreferredSize());
+
+        Box hboxResultM = Box.createHorizontalBox();
+        hboxResultM.add(Box.createHorizontalGlue());
+        hboxResultM.add(labelForM);
+        hboxResultM.add(Box.createHorizontalStrut(10));
+        hboxResultM.add(textFieldM);
+        hboxResultM.add(Box.createHorizontalGlue());
+        hboxResultM.setBorder(BorderFactory.createLineBorder(Color.BLUE));
+
 // Связать области воедино в компоновке BoxLayout
         Box contentBox = Box.createVerticalBox();
         contentBox.add(Box.createVerticalGlue());
@@ -168,6 +182,7 @@ public class MainFrame extends JFrame {
         contentBox.add(hboxVariables);
         contentBox.add(hboxResult);
         contentBox.add(hboxButtons);
+        contentBox.add(hboxResultM);
         contentBox.add(Box.createVerticalGlue());
         getContentPane().add(contentBox, BorderLayout.CENTER);
     }
