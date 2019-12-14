@@ -37,15 +37,17 @@ public class GornerTableModel extends AbstractTableModel {
     }
     public Object getValueAt(int row, int col)
     {
-        double x = from + step*row;
+        double x = from + step * row;
         if (col==0)
         {
             return x;
         } else {
             Double result = 0.0;
-            // Вычисление значения в точке по схеме Горнера.
-            // Вспомнить 1-ый курс и реализовать
-            // ...
+            int p = coefficients.length-1;
+            for(int i = 0; i < coefficients.length; i++)
+            {
+                result += Math.pow(x, coefficients.length-1-i)*coefficients[p--];
+            }
             return result;
         }
     }

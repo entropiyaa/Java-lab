@@ -306,8 +306,8 @@ public class MainFrame extends JFrame {
                 coefficients[i++] = Double.parseDouble(arg);
             }
         }
-        catch (NumberFormatException ex) {
-
+        catch (NumberFormatException ex)
+        {
             System.out.println("Ошибка преобразования строки '" + args[i] + "' в число типа Double");
             System.exit(-2);
         }
