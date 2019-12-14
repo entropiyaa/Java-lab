@@ -1,8 +1,5 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -32,6 +29,7 @@ public class MainFrame extends JFrame {
 
     private Box hboxFormulaType = Box.createHorizontalBox();
     private int formulaId = 1;
+    private Double sum = 0.0;
 
     // Формула No1 для рассчѐта
     public Double calculate1(Double x, Double y, Double z) {
@@ -174,6 +172,17 @@ public class MainFrame extends JFrame {
         hboxResultM.add(textFieldM);
         hboxResultM.add(Box.createHorizontalGlue());
         hboxResultM.setBorder(BorderFactory.createLineBorder(Color.BLUE));
+
+// Создание кнопки М+
+        JButton buttonM = new JButton("M+");
+        buttonM.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+
+                Double M = Double.parseDouble(textFieldResult.getText());
+                sum += M;
+                textFieldM.setText(sum.toString());
+            }
+        });
 
 // Связать области воедино в компоновке BoxLayout
         Box contentBox = Box.createVerticalBox();
