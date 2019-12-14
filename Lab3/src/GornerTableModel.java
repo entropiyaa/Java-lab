@@ -29,7 +29,7 @@ public class GornerTableModel extends AbstractTableModel {
     }
     public int getColumnCount()
     {
-        return 2;
+        return 3;
     }
     public int getRowCount()
     {
@@ -57,8 +57,10 @@ public class GornerTableModel extends AbstractTableModel {
         {
             case 0:
                 return "Значение X";
-            default:
+            case 1:
                 return "Значение многочлена";
+            default:
+                return "Близко к целому?";
         }
     }
     public Class<?> getColumnClass(int col)
