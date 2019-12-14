@@ -193,6 +193,15 @@ public class MainFrame extends JFrame {
             }
         });
 
+// Коробка для новых кнопочек
+        Box hboxButtonsM = Box.createHorizontalBox();
+        hboxButtonsM.add(Box.createHorizontalGlue());
+        hboxButtonsM.add(buttonM);
+        hboxButtonsM.add(Box.createHorizontalStrut(30));
+        hboxButtonsM.add(buttonMC);
+        hboxButtonsM.add(Box.createHorizontalGlue());
+        hboxButtonsM.setBorder(BorderFactory.createLineBorder(Color.GREEN));
+
 // Связать области воедино в компоновке BoxLayout
         Box contentBox = Box.createVerticalBox();
         contentBox.add(Box.createVerticalGlue());
@@ -201,6 +210,7 @@ public class MainFrame extends JFrame {
         contentBox.add(hboxResult);
         contentBox.add(hboxButtons);
         contentBox.add(hboxResultM);
+        contentBox.add(hboxButtonsM);
         contentBox.add(Box.createVerticalGlue());
         getContentPane().add(contentBox, BorderLayout.CENTER);
     }
