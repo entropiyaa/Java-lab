@@ -19,11 +19,12 @@ import javax.swing.JTextField;
 
 public class MainFrame extends JFrame {
 
-    private static final int WIDTH = 400;
-    private static final int HEIGHT = 320;
+    private static final int WIDTH = 600;
+    private static final int HEIGHT = 480;
 
     private JTextField textFieldX;
     private JTextField textFieldY;
+    private JTextField textFieldZ;
     private JTextField textFieldResult;
 
     private ButtonGroup radioButtons = new ButtonGroup();
@@ -32,13 +33,23 @@ public class MainFrame extends JFrame {
     private int formulaId = 1;
 
     // Формула No1 для рассчѐта
-    public Double calculate1(Double x, Double y) {
-        return x*x + y*y;
+    public Double calculate1(Double x, Double y, Double z) {
+
+        double chisl, znam, result;
+        chisl = Math.sqrt(Math.sqrt(Math.cos(Math.getExponent(y)) + Math.getExponent(y * y) + Math.sqrt(1/x)));
+        znam = Math.pow(Math.cos(Math.PI * z * z * z) + Math.log(z*z + 2*z + 1), Math.sin(y));
+        result = chisl / znam;
+        return result;
     }
 
     // Формула No2 для рассчѐта
-    public Double calculate2(Double x, Double y) {
-        return x*x*x + 1/y;
+    public Double calculate2(Double x, Double y, Double z) {
+
+        double chisl, znam, result;
+        chisl = (1 + Math.pow(x,z) + Math.log(y * y)) * (1 - Math.sin(y * z));
+        znam = Math.sqrt(x * x * x + 1);
+        result = chisl / znam;
+        return result;
     }
 
     // Вспомогательный метод для добавления кнопок на панель
@@ -76,6 +87,9 @@ public class MainFrame extends JFrame {
         JLabel labelForY = new JLabel("Y:");
         textFieldY = new JTextField("0", 10);
         textFieldY.setMaximumSize(textFieldY.getPreferredSize());
+        JLabel labelForZ = new JLabel("Z:");
+        textFieldZ = new JTextField("0", 10);
+        textFieldZ.setMaximumSize(textFieldZ.getPreferredSize());
 
         Box hboxVariables = Box.createHorizontalBox();
         hboxVariables.setBorder(BorderFactory.createLineBorder(Color.RED));
@@ -87,11 +101,15 @@ public class MainFrame extends JFrame {
         hboxVariables.add(labelForY);
         hboxVariables.add(Box.createHorizontalStrut(10));
         hboxVariables.add(textFieldY);
+        hboxVariables.add(Box.createHorizontalStrut(100));
+        hboxVariables.add(labelForZ);
+        hboxVariables.add(Box.createHorizontalStrut(10));
+        hboxVariables.add(textFieldZ);
         hboxVariables.add(Box.createHorizontalGlue());
 
 // Создать область для вывода результата
         JLabel labelForResult = new JLabel("Результат:");
-        textFieldResult = new JTextField("0", 10);
+        textFieldResult = new JTextField("0", 20);
         textFieldResult.setMaximumSize(textFieldResult.getPreferredSize());
 
         Box hboxResult = Box.createHorizontalBox();
@@ -109,11 +127,13 @@ public class MainFrame extends JFrame {
                 try {
                     Double x = Double.parseDouble(textFieldX.getText());
                     Double y = Double.parseDouble(textFieldY.getText());
+                    Double z = Double.parseDouble(textFieldY.getText());
                     Double result;
+
                     if (formulaId == 1)
-                        result = calculate1(x, y);
+                        result = calculate1(x, y, z);
                     else
-                        result = calculate2(x, y);
+                        result = calculate2(x, y, z);
                     textFieldResult.setText(result.toString());
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(MainFrame.this,
@@ -128,6 +148,7 @@ public class MainFrame extends JFrame {
             public void actionPerformed(ActionEvent ev) {
                 textFieldX.setText("0");
                 textFieldY.setText("0");
+                textFieldZ.setText("0");
                 textFieldResult.setText("0");
             }
         });
