@@ -39,6 +39,7 @@ public class MainFrame extends JFrame {
     private JMenuItem saveToTextMenuItem;
     private JMenuItem saveToGraphicsMenuItem;
     private JMenuItem searchValueMenuItem;
+    private JMenuItem info;
 
     private JTextField textFieldFrom;
     private JTextField textFieldTo;
@@ -65,6 +66,8 @@ public class MainFrame extends JFrame {
         menuBar.add(fileMenu);
         JMenu tableMenu = new JMenu("Таблица");
         menuBar.add(tableMenu);
+        JMenu infoMenu = new JMenu("Справка");
+        menuBar.add(infoMenu);
 
         // Создать новое "действие" по сохранению в текстовый файл
         Action saveToTextAction = new AbstractAction("Сохранить в текстовый файл") {
@@ -121,6 +124,16 @@ public class MainFrame extends JFrame {
 
         searchValueMenuItem = tableMenu.add(searchValueAction);
         searchValueMenuItem.setEnabled(false);
+
+        //  Создаём новое дейсвие - информация о разработчике
+        Action getInfo = new AbstractAction("О программе..") {
+            public void actionPerformed(ActionEvent event) {
+                JOptionPane.showMessageDialog(MainFrame.this,
+                        "Татьяна Заяц\n2 курс 10 группа", "Автор программы",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+        };
+        info = infoMenu.add(getInfo);
 
         // создание текстовых полей
         JLabel labelForFrom = new JLabel("X изменяется на интервале от:");
