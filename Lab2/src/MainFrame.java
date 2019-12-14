@@ -184,6 +184,15 @@ public class MainFrame extends JFrame {
             }
         });
 
+// Создание кнопки МС
+        JButton buttonMC = new JButton("MC");
+        buttonMC.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                textFieldM.setText("0");
+                sum = 0.0;
+            }
+        });
+
 // Связать области воедино в компоновке BoxLayout
         Box contentBox = Box.createVerticalBox();
         contentBox.add(Box.createVerticalGlue());
