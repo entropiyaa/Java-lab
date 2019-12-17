@@ -7,9 +7,7 @@ import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
-import java.awt.geom.Ellipse2D;
 import java.awt.geom.GeneralPath;
-import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.text.DecimalFormat;
@@ -341,6 +339,44 @@ public class GraphicsDisplay extends JPanel {
         }
     }
 
+    public void reset() {
+        this.showGraphics(this.originalData);
+    }
+
+    protected int findSelectedPoint(int x, int y) {
+        if (this.graphicsData == null) {
+            return -1;
+        } else {
+            int pos = 0;
+
+            for(Iterator var5 = this.graphicsData.iterator(); var5.hasNext(); ++pos) {
+                Double[] point = (Double[])var5.next();
+                java.awt.geom.Point2D.Double screenPoint = this.xyToPoint(point[0], point[1]);
+                double distance = (screenPoint.getX() - (double)x) * (screenPoint.getX() - (double)x) + (screenPoint.getY() - (double)y) * (screenPoint.getY() - (double)y);
+                if (distance < 100.0D) {
+                    return pos;
+                }
+            }
+            return -1;
+        }
+    }
+
+    public void saveToTextFile(File selectedFile) {
+        try {
+            PrintStream out = new PrintStream(selectedFile);
+            out.println("Результаты скорректированых значений");
+            Iterator var4 = this.graphicsData.iterator();
+
+            while(var4.hasNext()) {
+                Double[] point = (Double[])var4.next();
+                out.println(point[0] + " " + point[1]);
+            }
+
+            out.close();
+        } catch (FileNotFoundException var5) {
+        }
+
+    }
 
     public class MouseHandler extends MouseAdapter {
         public MouseHandler() {
