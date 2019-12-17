@@ -68,13 +68,8 @@ public class GraphicsDisplay extends JPanel {
         this.addMouseListener(new GraphicsDisplay.MouseHandler());
     }
 
-    // Данный метод вызывается из обработчика элемента меню "Открыть файл с графиком"
-    // главного окна приложения в случае успешной загрузки данных
     public void showGraphics(ArrayList<Double[]> graphicsData) {
-        // Сохранить массив точек во внутреннем поле класса
-       // this.graphicsData = graphicsData;
-        // Запросить перерисовку компонента, т.е. неявно вызвать paintComponent()
-        //repaint();
+
         this.graphicsData = graphicsData;
         this.originalData = new ArrayList<>(graphicsData.size());
         Iterator var3 = graphicsData.iterator();
@@ -109,8 +104,6 @@ public class GraphicsDisplay extends JPanel {
         this.repaint();
     }
 
-    // Методы-модификаторы для изменения параметров отображения графика
-    // Изменение любого параметра приводит к перерисовке области
     public void setShowAxis(boolean showAxis) {
         this.showAxis = showAxis;
         repaint();
@@ -121,231 +114,127 @@ public class GraphicsDisplay extends JPanel {
         repaint();
     }
 
-    // Метод отображения всего компонента, содержащего график
-    public void paintComponent(Graphics g) {
-/*        *//* Шаг 1 - Вызвать метод предка для заливки области цветом заднего фона
-         * Эта функциональность - единственное, что осталось в наследство от
-         * paintComponent класса JPanel *//*
-        super.paintComponent(g);
-
-        // Шаг 2 - Если данные графика не загружены (при показе компонентапри запуске программы) - ничего не делать
-        if (graphicsData == null || graphicsData.length == 0) return;
-
-        // Шаг 3 - Определить минимальное и максимальное значения для координат X и Y
-        minX = graphicsData[0][0];
-        maxX = graphicsData[graphicsData.length - 1][0];
-        minY = graphicsData[0][1];
-        maxY = minY;
-        // Найти минимальное и максимальное значение функции
-        for (int i = 1; i < graphicsData.length; i++) {
-            if (graphicsData[i][1] < minY) {
-                minY = graphicsData[i][1];
-            }
-            if (graphicsData[i][1] > maxY) {
-                maxY = graphicsData[i][1];
-            }*/
-        super.paintComponent(g);
-        this.scaleX = this.getSize().getWidth() / (this.viewport[1][0] - this.viewport[0][0]);
-        this.scaleY = this.getSize().getHeight() / (this.viewport[0][1] - this.viewport[1][1]);
-        if (this.graphicsData != null && this.graphicsData.size() != 0) {
-            Graphics2D canvas = (Graphics2D)g;
-            Stroke oldStroke = canvas.getStroke();
-            Color oldColor = canvas.getColor();
-            Font oldFont = canvas.getFont();
-            Paint oldPaint = canvas.getPaint();
-
-            this.paintGrid(canvas);
-            if (this.showAxis) {
-                this.paintAxis(canvas);
-                this.paintLabels(canvas);
-            }
-
-            this.paintGraphics(canvas);
-            if (this.showMarkers) {
-                this.paintMarkers(canvas);
-            }
-
-            this.paintSelection(canvas);
-            canvas.setFont(oldFont);
-            canvas.setPaint(oldPaint);
-            canvas.setColor(oldColor);
-            canvas.setStroke(oldStroke);
-            }
-    }
-    private void paintSelection(Graphics2D canvas) {
-        if (this.scaleMode) {
-            canvas.setStroke(this.selectionStroke);
-            canvas.setColor(Color.BLACK);
-            canvas.draw(this.selectionRect);
-        }
-    }
-
-
-
-
-   /*     *//* Шаг 4 - Определить (исходя из размеров окна) масштабы по осям X и Y - сколько пикселов
-         * приходится на единицу длины по X и по Y *//*
-        double scaleX = getSize().getWidth() / (maxX - minX);
-        double scaleY = getSize().getHeight() / (maxY - minY);
-
-        // Шаг 5 - Чтобы изображение было неискажѐнным - масштаб должен быть одинаков
-        // Выбираем за основу минимальный
-        scale = Math.min(scaleX, scaleY);
-
-        // Шаг 6 - корректировка границ отображаемой области согласно выбранному масштабу
-        if (scale == scaleX) {
-            double yIncrement = (getSize().getHeight() / scale - (maxY - minY)) / 2;
-            maxY += yIncrement;
-            minY -= yIncrement;
-        }
-        if (scale == scaleY) {
-            double xIncrement = (getSize().getWidth() / scale - (maxX - minX)) / 2;
-            maxX += xIncrement;
-            minX -= xIncrement;
-        }
-
-        // Шаг 7 - Сохранить текущие настройки холста
-        Graphics2D canvas = (Graphics2D) g;
-        Stroke oldStroke = canvas.getStroke();
-        Color oldColor = canvas.getColor();
-        Paint oldPaint = canvas.getPaint();
-        Font oldFont = canvas.getFont();
-
-        // Шаг 8 - В нужном порядке вызвать методы отображения элементов графика
-        if (showAxis) paintAxis(canvas);
-        // Затем отображается сам график
-        paintGraphics(canvas);
-        // Затем (если нужно) отображаются маркеры точек, по которым строился график.
-        if (showMarkers) paintMarkers(canvas);
-
-        // Шаг 9 - Восстановить старые настройки холста
-        canvas.setFont(oldFont);
-        canvas.setPaint(oldPaint);
-        canvas.setColor(oldColor);
-        canvas.setStroke(oldStroke);*/
-
-
-    // Отрисовка графика по прочитанным координатам
-    protected void paintGraphics(Graphics2D canvas) {
-        // Выбрать линию для рисования графика
-        canvas.setStroke(graphicsStroke);
-        // Выбрать цвет линии
-        canvas.setColor(Color.RED);
-
-        GeneralPath graphics = new GeneralPath();
-        for (int i = 0; i < graphicsData.length; i++) {
-            // Преобразовать значения (x,y) в точку на экране point
-            Point2D.Double point = xyToPoint(graphicsData[i][0], graphicsData[i][1]);
-            if (i > 0) {
-                // Не первая итерация цикла - вести линию в точку point
-                graphics.lineTo(point.getX(), point.getY());
-            } else {
-                // Первая итерация цикла - установить начало пути в точку point
-                graphics.moveTo(point.getX(), point.getY());
-            }
-        }
-        // Отобразить график
-        canvas.draw(graphics);
-    }
-
-    // Отображение маркеров точек, по которым рисовался график
-    protected void paintMarkers(Graphics2D canvas) {
-
-        // Шаг 1 - Установить специальное перо для черчения контуров маркеров
-        canvas.setStroke(markerStroke);
-        // Выбрать красный цвета для контуров маркеров
-        canvas.setColor(Color.RED);
-        // Выбрать красный цвет для закрашивания маркеров внутри
-        canvas.setPaint(Color.RED);
-
-        // Шаг 2 - Организовать цикл по всем точкам графика
-        for (Double[] point : graphicsData) {
-            // Инициализировать эллипс как объект для представления маркера
-            Ellipse2D.Double marker = new Ellipse2D.Double();
-            Point2D.Double center = xyToPoint(point[0], point[1]);
-            // Угол прямоугольника - отстоит на расстоянии (3,3)
-            Point2D.Double corner = shiftPoint(center, 3, 3);
-            // Задать эллипс по центру и диагонали
-            marker.setFrameFromCenter(center, corner);
-            canvas.draw(marker); // Начертить контур маркера
-            canvas.fill(marker); // Залить внутреннюю область маркера
-        }
-    }
-
-    // Метод, обеспечивающий отображение осей координат
-    protected void paintAxis(Graphics2D canvas) {
-
-        // Установить особое начертание для осей
-        canvas.setStroke(axisStroke);
-        // Оси рисуются чѐрным цветом
-        canvas.setColor(Color.BLACK);
-        // Стрелки заливаются чѐрным цветом
-        canvas.setPaint(Color.BLACK);
-        // Подписи к координатным осям делаются специальным шрифтом
-        canvas.setFont(axisFont);
-        // Создать объект контекста отображения текста - для получения характеристик устройства (экрана)
-        FontRenderContext context = canvas.getFontRenderContext();
-
-        // Определить, должна ли быть видна ось Y на графике
-        if (minX <= 0.0 && maxX >= 0.0) {
-            canvas.draw(new Line2D.Double(xyToPoint(0, maxY), xyToPoint(0, minY)));
-            // Стрелка оси Y
-            GeneralPath arrow = new GeneralPath();
-            // Установить начальную точку ломаной точно на верхний конец оси Y
-            Point2D.Double lineEnd = xyToPoint(0, maxY);
-            arrow.moveTo(lineEnd.getX(), lineEnd.getY());
-            // Вести левый "скат" стрелки в точку с относительными координатами (5,20)
-            arrow.lineTo(arrow.getCurrentPoint().getX() + 5, arrow.getCurrentPoint().getY() + 20);
-            // Вести нижнюю часть стрелки в точку с относительными координатами (-10, 0)
-            arrow.lineTo(arrow.getCurrentPoint().getX() - 10, arrow.getCurrentPoint().getY());
-            // Замкнуть треугольник стрелки
-            arrow.closePath();
-            canvas.draw(arrow); // Нарисовать стрелку
-            canvas.fill(arrow); // Закрасить стрелку
-            // Нарисовать подпись к оси Y
-            // Определить, сколько места понадобится для надписи "y"
-            Rectangle2D bounds = axisFont.getStringBounds("y", context);
-            Point2D.Double labelPos = xyToPoint(0, maxY);
-            // Вывести надпись в точке с вычисленными координатами
-            canvas.drawString("y", (float) labelPos.getX() + 10, (float) (labelPos.getY() - bounds.getY()));
-        }
-
-        // Определить, должна ли быть видна ось X на графике
-        if (minY <= 0.0 && maxY >= 0.0) {
-            canvas.draw(new Line2D.Double(xyToPoint(minX, 0), xyToPoint(maxX, 0)));
-            GeneralPath arrow = new GeneralPath();
-            Point2D.Double lineEnd = xyToPoint(maxX, 0);
-            arrow.moveTo(lineEnd.getX(), lineEnd.getY());
-            arrow.lineTo(arrow.getCurrentPoint().getX() - 20, arrow.getCurrentPoint().getY() - 5);
-            arrow.lineTo(arrow.getCurrentPoint().getX(), arrow.getCurrentPoint().getY() + 10);
-            arrow.closePath();
-            canvas.draw(arrow);
-            canvas.fill(arrow);
-            Rectangle2D bounds = axisFont.getStringBounds("x", context);
-            Point2D.Double labelPos = xyToPoint(maxX, 0);
-            canvas.drawString("x", (float) (labelPos.getX() -
-                    bounds.getWidth() - 10), (float) (labelPos.getY() + bounds.getY()));
-        }
-    }
-
-    // Метод-помощник, осуществляющий преобразование координат.
     protected Point2D.Double xyToPoint(double x, double y) {
-        // Вычисляем смещение X от самой левой точки (minX)
-        double deltaX = x - minX;
-        // Вычисляем смещение Y от точки верхней точки (maxY)
-        double deltaY = maxY - y;
-        return new Point2D.Double(deltaX * scale, deltaY * scale);
+        double deltaX = x - this.viewport[0][0];
+        double deltaY = this.viewport[0][1] - y;
+        return new java.awt.geom.Point2D.Double(deltaX * this.scaleX, deltaY * this.scaleY);
     }
 
-    /* Метод-помощник, возвращающий экземпляр класса Point2D.Double
-     * смещѐнный по отношению к исходному на deltaX, deltaY */
-    protected Point2D.Double shiftPoint(Point2D.Double src, double deltaX, double deltaY) {
+    protected double[] translatePointToXY(int x, int y) {
+        return new double[]{this.viewport[0][0] + (double)x / this.scaleX, this.viewport[0][1] - (double)y / this.scaleY};
+    }
 
-        // Инициализировать новый экземпляр точки
-        Point2D.Double dest = new Point2D.Double();
-        // Задать еѐ координаты как координаты существующей точки + заданные смещения
-        dest.setLocation(src.getX() + deltaX, src.getY() + deltaY);
-        return dest;
+    protected void paintGrid(Graphics2D canvas) {
+        canvas.setStroke(this.gridStroke);
+        canvas.setColor(Color.GRAY);
+        double pos = this.viewport[0][0];
+
+        double step;
+        for(step = (this.viewport[1][0] - this.viewport[0][0]) / 10.0D; pos < this.viewport[1][0]; pos += step) {
+            canvas.draw(new java.awt.geom.Line2D.Double(this.xyToPoint(pos, this.viewport[0][1]), this.xyToPoint(pos, this.viewport[1][1])));
+        }
+
+        canvas.draw(new java.awt.geom.Line2D.Double(this.xyToPoint(this.viewport[1][0], this.viewport[0][1]), this.xyToPoint(this.viewport[1][0], this.viewport[1][1])));
+        pos = this.viewport[1][1];
+
+        for(step = (this.viewport[0][1] - this.viewport[1][1]) / 10.0D; pos < this.viewport[0][1]; pos += step) {
+            canvas.draw(new java.awt.geom.Line2D.Double(this.xyToPoint(this.viewport[0][0], pos), this.xyToPoint(this.viewport[1][0], pos)));
+        }
+
+        canvas.draw(new java.awt.geom.Line2D.Double(this.xyToPoint(this.viewport[0][0], this.viewport[0][1]), this.xyToPoint(this.viewport[1][0], this.viewport[0][1])));
+    }
+
+    protected void paintGraphics(Graphics2D canvas) {
+        canvas.setStroke(this.markerStroke);
+        canvas.setColor(Color.RED);
+        Double currentX = null;
+        Double currentY = null;
+        Iterator var5 = this.graphicsData.iterator();
+
+        while(var5.hasNext()) {
+            Double[] point = (Double[])var5.next();
+            if (point[0] >= this.viewport[0][0] && point[1] <= this.viewport[0][1] && point[0] <= this.viewport[1][0] && point[1] >= this.viewport[1][1]) {
+                if (currentX != null && currentY != null) {
+                    canvas.draw(new java.awt.geom.Line2D.Double(this.xyToPoint(currentX, currentY), this.xyToPoint(point[0], point[1])));
+                }
+
+                currentX = point[0];
+                currentY = point[1];
+            }
+        }
+
+    }
+
+    protected void paintAxis(Graphics2D canvas) {
+        canvas.setStroke(this.axisStroke);
+        canvas.setColor(Color.BLACK);
+        canvas.setFont(this.axisFont);
+        FontRenderContext context = canvas.getFontRenderContext();
+        Rectangle2D bounds;
+        java.awt.geom.Point2D.Double labelPos;
+        if (this.viewport[0][0] <= 0.0D && this.viewport[1][0] >= 0.0D) {
+            canvas.draw(new java.awt.geom.Line2D.Double(this.xyToPoint(0.0D, this.viewport[0][1]), this.xyToPoint(0.0D, this.viewport[1][1])));
+            canvas.draw(new java.awt.geom.Line2D.Double(this.xyToPoint(-(this.viewport[1][0] - this.viewport[0][0]) * 0.0025D, this.viewport[0][1] - (this.viewport[0][1] - this.viewport[1][1]) * 0.015D), this.xyToPoint(0.0D, this.viewport[0][1])));
+            canvas.draw(new java.awt.geom.Line2D.Double(this.xyToPoint((this.viewport[1][0] - this.viewport[0][0]) * 0.0025D, this.viewport[0][1] - (this.viewport[0][1] - this.viewport[1][1]) * 0.015D), this.xyToPoint(0.0D, this.viewport[0][1])));
+            bounds = this.axisFont.getStringBounds("y", context);
+            labelPos = this.xyToPoint(0.0D, this.viewport[0][1]);
+            canvas.drawString("y", (float)labelPos.x + 10.0F, (float)(labelPos.y + bounds.getHeight() / 2.0D));
+        }
+
+        if (this.viewport[1][1] <= 0.0D && this.viewport[0][1] >= 0.0D) {
+            canvas.draw(new java.awt.geom.Line2D.Double(this.xyToPoint(this.viewport[0][0], 0.0D), this.xyToPoint(this.viewport[1][0], 0.0D)));
+            canvas.draw(new java.awt.geom.Line2D.Double(this.xyToPoint(this.viewport[1][0] - (this.viewport[1][0] - this.viewport[0][0]) * 0.0D, (this.viewport[0][1] - this.viewport[1][1]) * 0.005D), this.xyToPoint(this.viewport[1][0], 0.0D)));
+            canvas.draw(new java.awt.geom.Line2D.Double(this.xyToPoint(this.viewport[1][0] - (this.viewport[1][0] - this.viewport[0][0]) * 0.01D, -(this.viewport[0][1] - this.viewport[1][1]) * 0.005D), this.xyToPoint(this.viewport[1][0], 0.0D)));
+            bounds = this.axisFont.getStringBounds("x", context);
+            labelPos = this.xyToPoint(this.viewport[1][0], 0.0D);
+            canvas.drawString("x", (float)(labelPos.x - bounds.getWidth() - 10.0D), (float)(labelPos.y - bounds.getHeight() / 2.0D));
+        }
+
+    }
+
+    protected void paintMarkers(Graphics2D canvas) {
+        canvas.setStroke(this.markerStroke);
+        canvas.setColor(Color.RED);
+        canvas.setPaint(Color.RED);
+        GeneralPath lastMarker = null;
+        int i = -1;
+        Iterator var5 = this.graphicsData.iterator();
+
+        while(var5.hasNext()) {
+            Double[] point = (Double[])var5.next();
+            i++;
+            if (isSpecialPoint(point)) {
+                canvas.setColor(Color.BLACK);
+            } else {
+                canvas.setColor(Color.RED);
+            }
+
+            GeneralPath star = new GeneralPath();
+            java.awt.geom.Point2D.Double center = this.xyToPoint(point[0], point[1]);
+            star.moveTo(center.getX() - 5, center.getY() - 5);
+            star.lineTo(star.getCurrentPoint().getX() + 10, star.getCurrentPoint().getY() + 10);
+            star.moveTo(center.getX() + 5, center.getY() - 5);
+            star.lineTo(star.getCurrentPoint().getX() - 10, star.getCurrentPoint().getY() + 10);
+            star.moveTo(center.getX(), center.getY() - 5);
+            star.lineTo(star.getCurrentPoint().getX(), star.getCurrentPoint().getY() + 10);
+            star.moveTo(center.getX() - 5, center.getY());
+            star.lineTo(star.getCurrentPoint().getX() + 10, star.getCurrentPoint().getY());
+            GeneralPath path = new GeneralPath();
+            if (i == this.selectedMarker) {
+                lastMarker = star;
+            } else {
+                canvas.draw(star);
+                canvas.fill(star);
+            }
+        }
+
+        if (lastMarker != null) {
+            canvas.setColor(Color.BLUE);
+            canvas.setPaint(Color.BLUE);
+            canvas.draw(lastMarker);
+            canvas.fill(lastMarker);
+        }
+
     }
 
     public class MouseHandler extends MouseAdapter {
