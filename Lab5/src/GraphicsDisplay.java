@@ -11,53 +11,97 @@ import java.awt.geom.GeneralPath;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Iterator;
 import javax.swing.JPanel;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+
 
 
 @SuppressWarnings("serial")
 public class GraphicsDisplay extends JPanel {
-    // Список координат точек для построения графика
-    private Double[][] graphicsData;
-    // Флаговые переменные, задающие правила отображения графика
-    private boolean showAxis = true;
-    private boolean showMarkers = true;
-    // Границы диапазона пространства, подлежащего отображению
+
+    private ArrayList<Double[]> graphicsData;
+    private ArrayList<Double[]> originalData;
+    private int selectedMarker = -1;
     private double minX;
     private double maxX;
     private double minY;
     private double maxY;
-    // Используемый масштаб отображения
-    private double scale;
-    // Различные стили черчения линий
-    private BasicStroke graphicsStroke;
+    private double scaleX;
+    private double scaleY;
+    private double[][] viewport = new double[2][2];
+    private ArrayList<double[][]> undoHistory = new ArrayList<>(5);
+    private boolean showAxis = true;
+    private boolean showMarkers = true;
+    private Font axisFont;
+    private Font labelsFont;
     private BasicStroke axisStroke;
     private BasicStroke markerStroke;
-    // Различные шрифты отображения надписей
-    private Font axisFont;
+    private BasicStroke gridStroke;
+    private static DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance();
+    private boolean scaleMode = false;
+    private BasicStroke selectionStroke;
+    private boolean changeMode = false;
+    private double[] originalPoint = new double[2];
+    private java.awt.geom.Rectangle2D.Double selectionRect = new java.awt.geom.Rectangle2D.Double();
 
     public GraphicsDisplay() {
-        setBackground(Color.WHITE);
-        // Сконструировать необходимые объекты, используемые в рисовании
-        // Перо для рисования графика
-        graphicsStroke = new BasicStroke(2.0f, BasicStroke.CAP_BUTT,
-                BasicStroke.JOIN_ROUND, 10.0f, null, 0.0f);
-        // Перо для рисования осей координат
-        axisStroke = new BasicStroke(2.0f, BasicStroke.CAP_BUTT,
-                BasicStroke.JOIN_MITER, 10.0f, null, 0.0f);
-        // Перо для рисования контуров маркеров
-        markerStroke = new BasicStroke(1.0f, BasicStroke.CAP_BUTT,
-                BasicStroke.JOIN_MITER, 10.0f, null, 0.0f);
-        // Шрифт для подписей осей координат
-        axisFont = new Font("Serif", Font.BOLD, 36);
+        this.setBackground(Color.WHITE);
+        this.axisStroke = new BasicStroke(2.0F, 0, 1, 10.0F, null, 0.0F);
+        this.markerStroke = new BasicStroke(1.5F, 0, 1, 5.0F, null, 0.0F);
+        this.selectionStroke = new BasicStroke(1.0F, 0, 0, 10.0F, new float[]{10.0F, 10.0F}, 0.0F);
+
+        this.gridStroke = new BasicStroke(0.5F, 0, 1, 5.0F, new float[]{5.0F, 5.0F}, 2.0F);
+        this.axisFont = new Font("Serif", 1, 36);
+        this.labelsFont = new Font("Serif", 0, 10);
+        this.addMouseMotionListener(new GraphicsDisplay.MouseMotionHandler());
+        this.addMouseListener(new GraphicsDisplay.MouseHandler());
     }
 
     // Данный метод вызывается из обработчика элемента меню "Открыть файл с графиком"
     // главного окна приложения в случае успешной загрузки данных
-    public void showGraphics(Double[][] graphicsData) {
+    public void showGraphics(ArrayList<Double[]> graphicsData) {
         // Сохранить массив точек во внутреннем поле класса
-        this.graphicsData = graphicsData;
+       // this.graphicsData = graphicsData;
         // Запросить перерисовку компонента, т.е. неявно вызвать paintComponent()
-        repaint();
+        //repaint();
+        this.graphicsData = graphicsData;
+        this.originalData = new ArrayList<>(graphicsData.size());
+        Iterator var3 = graphicsData.iterator();
+
+        while(var3.hasNext()){
+            Double[] point = (Double[])var3.next();
+            Double[] newPoint = new Double[]{point[0], point[1]};
+            this.originalData.add(newPoint);
+        }
+
+        this.minX = (graphicsData.get(0))[0];
+        this.maxX = (graphicsData.get(graphicsData.size() - 1))[0];
+        this.minY = (graphicsData.get(0))[1];
+        this.maxY = this.minY;
+
+        for(int i = 1; i < graphicsData.size(); ++i) {
+            if ((graphicsData.get(i))[1] < this.minY) {
+                this.minY = (graphicsData.get(i))[1];
+            }
+
+            if ((graphicsData.get(i))[1] > this.maxY) {
+                this.maxY = (graphicsData.get(i))[1];
+            }
+        }
+        this.zoomToRegion(this.minX, this.maxY, this.maxX, this.minY);
+    }
+    public void zoomToRegion(double x1, double y1, double x2, double y2) {
+        this.viewport[0][0] = x1;
+        this.viewport[0][1] = y1;
+        this.viewport[1][0] = x2;
+        this.viewport[1][1] = y2;
+        this.repaint();
     }
 
     // Методы-модификаторы для изменения параметров отображения графика
@@ -74,9 +118,9 @@ public class GraphicsDisplay extends JPanel {
 
     // Метод отображения всего компонента, содержащего график
     public void paintComponent(Graphics g) {
-        /* Шаг 1 - Вызвать метод предка для заливки области цветом заднего фона
+/*        *//* Шаг 1 - Вызвать метод предка для заливки области цветом заднего фона
          * Эта функциональность - единственное, что осталось в наследство от
-         * paintComponent класса JPanel */
+         * paintComponent класса JPanel *//*
         super.paintComponent(g);
 
         // Шаг 2 - Если данные графика не загружены (при показе компонентапри запуске программы) - ничего не делать
@@ -94,11 +138,48 @@ public class GraphicsDisplay extends JPanel {
             }
             if (graphicsData[i][1] > maxY) {
                 maxY = graphicsData[i][1];
-            }
-        }
+            }*/
+        super.paintComponent(g);
+        this.scaleX = this.getSize().getWidth() / (this.viewport[1][0] - this.viewport[0][0]);
+        this.scaleY = this.getSize().getHeight() / (this.viewport[0][1] - this.viewport[1][1]);
+        if (this.graphicsData != null && this.graphicsData.size() != 0) {
+            Graphics2D canvas = (Graphics2D)g;
+            Stroke oldStroke = canvas.getStroke();
+            Color oldColor = canvas.getColor();
+            Font oldFont = canvas.getFont();
+            Paint oldPaint = canvas.getPaint();
 
-        /* Шаг 4 - Определить (исходя из размеров окна) масштабы по осям X и Y - сколько пикселов
-         * приходится на единицу длины по X и по Y */
+            this.paintGrid(canvas);
+            if (this.showAxis) {
+                this.paintAxis(canvas);
+                this.paintLabels(canvas);
+            }
+
+            this.paintGraphics(canvas);
+            if (this.showMarkers) {
+                this.paintMarkers(canvas);
+            }
+
+            this.paintSelection(canvas);
+            canvas.setFont(oldFont);
+            canvas.setPaint(oldPaint);
+            canvas.setColor(oldColor);
+            canvas.setStroke(oldStroke);
+            }
+    }
+    private void paintSelection(Graphics2D canvas) {
+        if (this.scaleMode) {
+            canvas.setStroke(this.selectionStroke);
+            canvas.setColor(Color.BLACK);
+            canvas.draw(this.selectionRect);
+        }
+    }
+
+
+
+
+   /*     *//* Шаг 4 - Определить (исходя из размеров окна) масштабы по осям X и Y - сколько пикселов
+         * приходится на единицу длины по X и по Y *//*
         double scaleX = getSize().getWidth() / (maxX - minX);
         double scaleY = getSize().getHeight() / (maxY - minY);
 
@@ -136,8 +217,8 @@ public class GraphicsDisplay extends JPanel {
         canvas.setFont(oldFont);
         canvas.setPaint(oldPaint);
         canvas.setColor(oldColor);
-        canvas.setStroke(oldStroke);
-    }
+        canvas.setStroke(oldStroke);*/
+
 
     // Отрисовка графика по прочитанным координатам
     protected void paintGraphics(Graphics2D canvas) {
