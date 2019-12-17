@@ -234,8 +234,113 @@ public class GraphicsDisplay extends JPanel {
             canvas.draw(lastMarker);
             canvas.fill(lastMarker);
         }
+    }
+
+    protected boolean isSpecialPoint(Double[] point) {
+        String str = String.valueOf(Math.abs(point[1]));
+        String[] arr = str.split("\\.");
+        String line = "";
+        for (int i = 0; i < arr.length; i++) {
+            line = line + arr[i];
+        }
+        //if(arr.length > 1){
+        for (int i = 0; i < line.length() - 1; i++) {
+            if (line.charAt(i) > line.charAt(i + 1)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private void paintLabels(Graphics2D canvas) {
+        canvas.setColor(Color.BLACK);
+        canvas.setFont(this.labelsFont);
+        FontRenderContext context = canvas.getFontRenderContext();
+        double labelYPos;
+        if (this.viewport[1][1] < 0.0D && this.viewport[0][1] > 0.0D) {
+            labelYPos = 0.0D;
+        } else {
+            labelYPos = this.viewport[1][1];
+        }
+
+        double labelXPos;
+        if (this.viewport[0][0] < 0.0D && this.viewport[1][0] > 0.0D) {
+            labelXPos = 0.0D;
+        } else {
+            labelXPos = this.viewport[0][0];
+        }
+
+        double pos = this.viewport[0][0];
+
+        double step;
+        java.awt.geom.Point2D.Double point;
+        String label;
+        Rectangle2D bounds;
+        for(step = (this.viewport[1][0] - this.viewport[0][0]) / 10.0D; pos < this.viewport[1][0]; pos += step) {
+            point = this.xyToPoint(pos, labelYPos);
+            label = formatter.format(pos);
+            bounds = this.labelsFont.getStringBounds(label, context);
+            canvas.drawString(label, (float)(point.getX() + 5.0D), (float)(point.getY() - bounds.getHeight()));
+        }
+
+        pos = this.viewport[1][1];
+
+        for(step = (this.viewport[0][1] - this.viewport[1][1]) / 10.0D; pos < this.viewport[0][1]; pos += step) {
+            point = this.xyToPoint(labelXPos, pos);
+            label = formatter.format(pos);
+            bounds = this.labelsFont.getStringBounds(label, context);
+            canvas.drawString(label, (float)(point.getX() + 5.0D), (float)(point.getY() - bounds.getHeight()));
+        }
+
+        if (this.selectedMarker >= 0) {
+            point = this.xyToPoint((this.graphicsData.get(this.selectedMarker))[0], (this.graphicsData.get(this.selectedMarker))[1]);
+            label = "X=" + formatter.format((this.graphicsData.get(this.selectedMarker))[0]) + ", Y=" + formatter.format((this.graphicsData.get(this.selectedMarker))[1]);
+            bounds = this.labelsFont.getStringBounds(label, context);
+            canvas.setColor(Color.BLACK);
+            canvas.drawString(label, (float)(point.getX() + 5.0D), (float)(point.getY() - bounds.getHeight()));
+        }
 
     }
+
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        this.scaleX = this.getSize().getWidth() / (this.viewport[1][0] - this.viewport[0][0]);
+        this.scaleY = this.getSize().getHeight() / (this.viewport[0][1] - this.viewport[1][1]);
+        if (this.graphicsData != null && this.graphicsData.size() != 0) {
+            Graphics2D canvas = (Graphics2D)g;
+            Stroke oldStroke = canvas.getStroke();
+            Color oldColor = canvas.getColor();
+            Font oldFont = canvas.getFont();
+            Paint oldPaint = canvas.getPaint();
+
+            this.paintGrid(canvas);
+            if (this.showAxis) {
+                this.paintAxis(canvas);
+                this.paintLabels(canvas);
+            }
+
+            this.paintGraphics(canvas);
+            if (this.showMarkers) {
+                this.paintMarkers(canvas);
+            }
+
+            this.paintSelection(canvas);
+            canvas.setFont(oldFont);
+            canvas.setPaint(oldPaint);
+            canvas.setColor(oldColor);
+            canvas.setStroke(oldStroke);
+        }
+    }
+
+    private void paintSelection(Graphics2D canvas) {
+        if (this.scaleMode) {
+            canvas.setStroke(this.selectionStroke);
+            canvas.setColor(Color.BLACK);
+            canvas.draw(this.selectionRect);
+        }
+    }
+
 
     public class MouseHandler extends MouseAdapter {
         public MouseHandler() {
