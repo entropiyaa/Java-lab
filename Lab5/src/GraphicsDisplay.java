@@ -22,9 +22,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 
-
-
-
 @SuppressWarnings("serial")
 public class GraphicsDisplay extends JPanel {
 
