@@ -1,4 +1,7 @@
-# Java-lab-course2
+# Java-labs
+
+### university labs 2 course 3 semester
+ 
 Лабораторная 1. Разработка простейшего консольного приложения.
 * *root:* https://github.com/entropiyaa/Java-lab-course2/tree/LAB1
 * *source:* https://github.com/entropiyaa/Java-lab-course2/tree/LAB1/Lab1/src
